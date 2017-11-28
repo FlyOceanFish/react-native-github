@@ -18,28 +18,28 @@ Navigation.startTabBasedApp({
       screen: 'com.fof.FirstTabScreen', // this is a registered name for a screen
       icon: require('./img/ic_polular.png'),
       // selectedIcon: require('./img/one_selected.png'), // iOS only
-      title: 'Screen One'
+      title: '最新'
     },
     {
       label: '趋势',
       screen: 'com.fof.SecondTabScreen',
       icon: require('./img/ic_trending.png'),
       // selectedIcon: require('./img/one_selected.png'), // iOS only
-      title: 'Screen Two'
+      title: '趋势'
     },
     {
       label: '收藏',
       screen: 'com.fof.ThreeTabScreen',
       icon: require('./img/ic_favorite.png'),
       // selectedIcon: require('./img/one_selected.png'), // iOS only
-      title: 'Screen Three'
+      title: '收藏'
     },
     {
       label: '我的',
       screen: 'com.fof.FourTabScreen',
       icon: require('./img/ic_my.png'),
       // selectedIcon: require('./img/ic_my.png'), // iOS only
-      title: 'Screen Four'
+      title: '我的'
     }
   ],
   animationType: Platform.OS === 'ios' ? 'slide-down' : 'fade',
