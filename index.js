@@ -18,7 +18,7 @@ Navigation.startTabBasedApp({
       screen: 'com.fof.FirstTabScreen', // this is a registered name for a screen
       icon: require('./img/ic_polular.png'),
       // selectedIcon: require('./img/one_selected.png'), // iOS only
-      title: '最新'
+      title: '最热'
     },
     {
       label: '趋势',

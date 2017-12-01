@@ -111,6 +111,18 @@ class PopularTab extends Component{
 
   _renderItem = ({item}) => (
       <RepositoryCell
+       onSelect={()=>{
+         this.props.navigator.push({
+           screen: 'com.fof.RepositoryDetail',
+           title: item.full_name,
+           passProps:{
+             item:item
+           },
+           navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
+               tabBarHidden: true
+           }
+         });
+       }}
        data= {item}/>
     );
 
