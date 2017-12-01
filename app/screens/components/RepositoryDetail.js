@@ -16,7 +16,9 @@ export default class RepositoryDetail extends Component<{}> {
     return (
       <View style={styles.container}>
           <WebView source={{uri: this.props.item.html_url}}
-                   style={{flex:1}}/>
+                   style={{flex:1}}
+                   startInLoadingState={true}
+                   />
       </View>
     );
   }
