@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import CustomeKeyPage from '../view/CustomeKeyPage'
+import SortKeyPage from '../view/SortKeyPage'
 
 export default class FourTabScreen extends Component<{}> {
   render() {
@@ -22,7 +23,7 @@ export default class FourTabScreen extends Component<{}> {
           onPress={()=>{
             this.props.navigator.push({
                 screen: 'com.fof.CustomeKeyPage',
-                title: '标签',
+                title: '自定义标签',
                 navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
                     tabBarHidden: true
                 }
@@ -30,6 +31,36 @@ export default class FourTabScreen extends Component<{}> {
           }}
         >
         自定义标签
+        </Text>
+
+        <Text style={styles.welcome}
+          onPress={()=>{
+            this.props.navigator.push({
+                screen: 'com.fof.SortKeyPage',
+                title: '排序',
+                navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
+                    tabBarHidden: true
+                }
+            });
+          }}
+        >
+        标签排序
+        </Text>
+        <Text style={styles.welcome}
+          onPress={()=>{
+            this.props.navigator.push({
+                screen: 'com.fof.CustomeKeyPage',
+                title: '标签移除',
+                passProps:{
+                  isRemoveKey:true
+                },
+                navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
+                    tabBarHidden: true
+                }
+            });
+          }}
+        >
+        标签移除
         </Text>
       </View>
     );

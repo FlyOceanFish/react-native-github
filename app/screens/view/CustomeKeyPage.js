@@ -11,25 +11,38 @@ import {
   Text,
   View,
   Image,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import CheckBox from 'react-native-check-box'
 import LanguageDao,{FLAG_LANGUAGE} from '../../dao/LanguageDao'
 import ArrayUtils from '../../Vendor/ArrayUtils'
 
 export default class CustomeKeyPage extends Component<{}> {
-  static navigatorButtons = {
-      rightButtons:[
-          {
-              title:'保存',
-              id:'save',
-              buttonFontSize:16,
-              buttonFontWeight:'600'
-          }
-      ]
-  };
+  // static navigatorButtons = {
+  //     rightButtons:[
+  //         {
+  //             title:'保存',
+  //             id:'save',
+  //             buttonFontSize:16,
+  //             buttonFontWeight:'600'
+  //         }
+  //     ]
+  // };
   constructor(props){
     super(props);
+    this.isRemoveKey = this.props.isRemoveKey?true:false;
+    // CustomeKeyPage.navigatorButtons.rightButtons[0].title=this.isRemoveKey?'移除':'保存';
+    this.props.navigator.setButtons({
+      rightButtons: [
+        {
+            title:this.isRemoveKey?'移除':'保存',
+            id:'save',
+            buttonFontSize:16,
+            buttonFontWeight:'600'
+        }
+      ],
+      animated: false
+    });
     this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
     this.state={
       dataArray:[]
@@ -37,16 +50,21 @@ export default class CustomeKeyPage extends Component<{}> {
     this.changeValues = [];
 
     this.props.navigator.setOnNavigatorEvent((event)=>{
-      console.log(event.type);
+      // console.log(event.type);
       if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
         if (event.id == 'save') { // this is the same id field from the static navigatorButtons definition
           if (this.changeValues.length) {
-            console.log(JSON.stringify(this.state.dataArray));
+            if (this.isRemoveKey) {
+              for (var i = 0; i < this.changeValues.length; i++) {
+                ArrayUtils.remove(this.state.dataArray,this.changeValues[i]);
+              }
+            }
             this.languageDao.save(this.state.dataArray)
+            this.props.navigator.pop();
           }
         }
       }else if(event.type=='ScreenChangedEvent'){//按了返回按钮
-        console.log('点击了返回');
+        // console.log('点击了返回');
       }
     });
   }
@@ -71,11 +89,13 @@ export default class CustomeKeyPage extends Component<{}> {
       <CheckBox
         style={{flex:1,padding:10}}
         onClick={()=>{
-          item.checked = !item.checked;
+          if (!this.isRemoveKey) {
+            item.checked = !item.checked;
+          }
           ArrayUtils.updateArray(this.changeValues,item);
         }}
         leftText={leftText}
-        isChecked={item.checked}
+        isChecked={this.isRemoveKey?false:item.checked}
         checkedImage={<Image style={{tintColor:'#6495Ed'}} source={require('../../../img/ic_check_box.png')}/>}
         unCheckedImage={<Image style={{tintColor:'#6495Ed'}} source={require('../../../img/ic_check_box_outline_blank.png')}/>}
       />

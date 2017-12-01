@@ -15,6 +15,7 @@ import {
 
 import HttpUtils from '../../Vendor/HttpUtils'
 import DataRepository from '../../dao/DataRepository'
+import LanguageDao,{FLAG_LANGUAGE} from '../../dao/LanguageDao'
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import RepositoryCell from '../view/RepositoryCell'
 
@@ -24,24 +25,45 @@ const QUERY_STR = '&sort=stars';
 export default class FirstTabScreen extends Component<{}> {
   constructor(props){
     super(props);
+    this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
+    this.state={
+      languages:[]
+    }
+  }
+  componentDidMount(){
+    this._loadData();
+  }
+  _loadData(){
+    this.languageDao.fetch()
+    .then(result=>{
+      if (result) {
+          this.setState({
+              languages: result,
+          });
+      }
+    })
+    .catch(error=>{
+      console.log(error);
+    })
   }
   render() {
+    let content = this.state.languages.length>0?
+    <ScrollableTabView
+        tabBarBackgroundColor='#2196F3'
+        tabBarInactiveTextColor='mintcream'
+        tabBarActiveTextColor='white'
+        tabBarUnderlineStyle={{backgroundColor:'#e7e7e7',height:2}}
+        renderTabBar={() => <ScrollableTabBar style={{height: 40, borderWidth: 0, elevation: 2}}
+                                              tabStyle={{height: 39}}/>}
+    >
+    {this.state.languages.map((reuslt, i, arr)=> {
+        let language = arr[i];
+        return language.checked ? <PopularTab key={i} tabLabel={language.name} {...this.props}/> : null;
+    })}
+    </ScrollableTabView>:null;
     return (
       <View style={styles.container}>
-        <ScrollableTabView
-            tabBarBackgroundColor='#2196F3'
-            tabBarInactiveTextColor='mintcream'
-            tabBarActiveTextColor='white'
-            tabBarUnderlineStyle={{backgroundColor:'#e7e7e7',height:2}}
-            renderTabBar={()=><ScrollableTabBar/>
-          }
-        >
-          <PopularTab tabLabel='ios'>ios</PopularTab>
-          <PopularTab tabLabel='java'>java</PopularTab>
-          <PopularTab tabLabel='android'>android</PopularTab>
-          <PopularTab tabLabel='javaScript'>js</PopularTab>
-          <PopularTab tabLabel='python'>python</PopularTab>
-        </ScrollableTabView>
+        {content}
       </View>
     );
   }
@@ -61,13 +83,23 @@ class PopularTab extends Component{
   }
   onLoad(){
     let url = this.genURL(this.props.tabLabel);
-    this.dataRepository.fetchNewRepository(url)
+    this.dataRepository.fetchRepository(url)
         .then(result=>{
+          let items = result&&result.items?result.items:result?result:[];
           this.setState({
-            data:result.items,
+            data:items,
             refresh:false
           });
-          // console.log(result.items);
+          if (result&&result.update_date&&!this.dataRepository.checkData(result.update_date)) {
+            return this.dataRepository.fetchNewRepository(url);
+          }
+        })
+        .then(items=>{
+          if(!items||items.length==0)return;
+          this.setState({
+            data:items,
+            refresh:false
+          });
         })
         .catch(error=>{
           console.log(error);
