@@ -7,9 +7,11 @@
 		"test": "jest"
 	},
 	"dependencies": {
+		"GitHubTrending": "^3.0.0",
 		"react": "16.0.0",
 		"react-native": "0.50.4",
 		"react-native-check-box": "^2.0.2",
+		"react-native-htmlview": "^0.12.1",
 		"react-native-navigation": "^1.1.295",
 		"react-native-scrollable-tab-view": "^0.8.0",
 		"react-native-sortable-listview": "^0.2.6"

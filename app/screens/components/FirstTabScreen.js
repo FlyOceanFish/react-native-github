@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 
 import HttpUtils from '../../Vendor/HttpUtils'
-import DataRepository from '../../dao/DataRepository'
+import DataRepository,{FLAG_STORAGE} from '../../dao/DataRepository'
 import LanguageDao,{FLAG_LANGUAGE} from '../../dao/LanguageDao'
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import RepositoryCell from '../view/RepositoryCell'
@@ -72,7 +72,7 @@ export default class FirstTabScreen extends Component<{}> {
 class PopularTab extends Component{
   constructor(props){
     super(props);
-    this.dataRepository = new DataRepository();
+    this.dataRepository = new DataRepository(FLAG_STORAGE.flag_popular);
     this.state={
       result:'',
       refresh:true

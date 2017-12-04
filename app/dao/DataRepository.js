@@ -3,7 +3,18 @@ import {
   AsyncStorage
 } from 'react-native'
 
+import Trending from 'GitHubTrending'
+
+export var FLAG_STORAGE = {flag_popular:'popular',flag_trending:'trending'}
+
 export default class DataRepository{
+
+  constructor(flag){
+    this.flag = flag;
+    if (flag===FLAG_STORAGE.flag_trending) {
+      this.trending = new Trending();
+    }
+  }
 
   fetchRepository(url){
     return new Promise((resolve,reject)=>{
@@ -43,20 +54,33 @@ export default class DataRepository{
   //获取网络数据
   fetchNewRepository(url){
     return new Promise((resolve,reject)=>{
-      fetch(url)
-        .then(response=>response.json())
-        .then(result=>{
-          if (result) {
-            resolve(result.items);
-            this.saveRepository(url,result.items)
-          }else {
-            reject(new Error('数据为空'))
-          }
+      if (this.flag===FLAG_STORAGE.flag_trending) {
+        this.trending.fetchTrending(url)
+            .then(result=>{
+              if (!result) {
+                reject(new Error('数据为空'));
+              }else {
+                this.saveRepository(url,result)
+                resolve(result);
+              }
 
-        })
-        .catch(error=>{
-          reject(error);
-        })
+            })
+      }else {
+        fetch(url)
+          .then(response=>response.json())
+          .then(result=>{
+            if (result) {
+              resolve(result.items);
+              this.saveRepository(url,result.items)
+            }else {
+              reject(new Error('数据为空'))
+            }
+
+          })
+          .catch(error=>{
+            reject(error);
+          })
+      }
     })
   }
 
