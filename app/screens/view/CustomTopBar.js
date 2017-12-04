@@ -18,7 +18,7 @@ export default class CustomTopBar extends Component {
   render() {
     return(
       <View style={styles.container}>
-        <TouchableOpacity onPress={ () => {this.props.aa()}}>
+        <TouchableOpacity ref='button' onPress={ () => {this.props.aa(this.refs.button)}}>
           <View style={{flexDirection:'row',alignItems:'center'}}>
             <Text style={{fontSize:18,color:'white',fontWeight:'600',marginTop:5}}>趋势</Text>
             <Image

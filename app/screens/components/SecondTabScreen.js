@@ -19,7 +19,7 @@ import LanguageDao,{FLAG_LANGUAGE} from '../../dao/LanguageDao'
 import TrendingCell from '../view/TrendingCell'
 import TimeSpan from '../../model/TimeSpan'
 import CustomTopBar from '../view/CustomTopBar'
-import BasicExample from '../view/BasicExample'
+import Popover from '../../Vendor/Popover'
 
 import {Navigation} from 'react-native-navigation';
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
@@ -36,16 +36,16 @@ export default class SecondTabScreen extends Component<{}> {
     this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_language);
     this.state={
       languages:[],
-      popover:false
+      isVisible: false,
+      buttonRect: {},
     }
   }
   componentDidMount(){
       this.props.navigator.setStyle({
       navBarCustomView: 'com.fof.CustomTopBar',
       navBarComponentAlignment: 'center',
-      navBarCustomViewInitialProps: {title: 'Hi Custom',aa:()=>{
-        console.log('点击了----');
-        this.setState({popover:true})
+      navBarCustomViewInitialProps: {title: 'Hi Custom',aa:(button)=>{
+        this.showPopover(button);
       }}
     });
     this._loadData();
@@ -63,6 +63,19 @@ export default class SecondTabScreen extends Component<{}> {
       console.log(error);
     })
   }
+    showPopover(ref) {
+      ref.measure((ox, oy, width, height, px, py) => {
+        this.setState({
+          isVisible: true,
+          buttonRect: {x: px, y: py, width: width, height: height}
+        });
+      });
+  }
+
+  closePopover= ()=> {
+    this.setState({isVisible: false});
+  }
+
   render() {
     let content = this.state.languages.length>0?
     <ScrollableTabView
@@ -78,9 +91,16 @@ export default class SecondTabScreen extends Component<{}> {
         return language.checked ? <TrendingTab key={i} tabLabel={language.name} {...this.props}/> : null;
     })}
     </ScrollableTabView>:null;
+    let timeSpan = <Popover
+             isVisible={this.state.isVisible}
+             fromRect={this.state.buttonRect}
+             onClose={this.closePopover}>
+             <Text>Content</Text>
+         </Popover>
     return (
       <View style={styles.container}>
         {content}
+        {timeSpan}
       </View>
     );
   }
@@ -124,7 +144,6 @@ class TrendingTab extends Component{
             data:[],
             refresh:false
           });
-          console.log(error);
         });
   }
   genURL(timeSpan,category){
@@ -167,7 +186,6 @@ class TrendingTab extends Component{
           refreshing={this.state.refresh}
           onRefresh={this._onRefresh}
         />
-       {/**<Text style={{height:600}}>{this.state.data}</Text>*/}
       </View>
     );
   }
