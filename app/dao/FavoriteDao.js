@@ -47,6 +47,32 @@ export default class FavoriteDao{
       })
     })
   }
+  // 获取用户所收藏的项目
+  getAllItems(){
+    return new Promise((resolve,reject)=>{
+      this.getFavoriteKeys().then(keys=>{
+        var items = [];
+        if (keys) {
+          AsyncStorage.multiGet(keys,(err,stores)=>{
+            try {
+              stores.map((result,i,store)=>{
+                let value = store[i][0];
+                if(value)items.push(value);
+              })
+              resolve(items);
+            } catch (e) {
+              reject(e);
+            }
+          })
+        }else{
+          resolve(items);
+        }
+      })
+      .catch(e=>{
+        reject(e);
+      })
+    })
+  }
   /**
   *更新Favorite key集合
   * @param key 项目id或者名称
