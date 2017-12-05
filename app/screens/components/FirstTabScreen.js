@@ -152,7 +152,9 @@ class PopularTab extends Component{
              screen: 'com.fof.RepositoryDetail',
              title: aa.item.item.full_name,
              passProps:{
-               item:aa.item.item
+               item:aa.item.item,
+               isFavorite:aa.item.isFavorite,
+               flag:FLAG_STORAGE.flag_popular
              },
              navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
                  tabBarHidden: true

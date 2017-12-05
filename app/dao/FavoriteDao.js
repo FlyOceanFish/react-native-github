@@ -66,7 +66,7 @@ export default class FavoriteDao{
           }
         }else {
           if (index!==-1) {
-            favoriteKeys.splic(index,1);
+            favoriteKeys.splice(index,1);
           }
         }
         AsyncStorage.setItem(this.favoriteKey,JSON.stringify(favoriteKeys));

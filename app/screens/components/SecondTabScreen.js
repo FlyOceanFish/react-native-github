@@ -32,7 +32,7 @@ Navigation.registerComponent('com.fof.CustomTopBar', () => CustomTopBar);
 var timeSpanTextArray = [new TimeSpan('今天','since=daily'),new TimeSpan('本周','since=weekly'),new TimeSpan('本月','since=nmonlly')];
 const API_URL = 'https://github.com/trending/';
 
-var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
+var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_trending);
 var dataRepository = new DataRepository(FLAG_STORAGE.flag_trending);
 
 export default class SecondTabScreen extends Component<{}> {
@@ -188,7 +188,9 @@ class TrendingTab extends Component{
            screen: 'com.fof.RepositoryDetail',
            title: bb.item.item.fullName,
            passProps:{
-             item:bb.item.item
+             item:bb.item.item,
+             isFavorite:bb.item.isFavorite,
+             flag:FLAG_STORAGE.flag_trending
            },
            navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
                tabBarHidden: true
