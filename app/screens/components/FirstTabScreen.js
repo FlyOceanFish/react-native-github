@@ -14,13 +14,18 @@ import {
 } from 'react-native';
 
 import HttpUtils from '../../Vendor/HttpUtils'
+import Utils from '../../Vendor/Utils'
 import DataRepository,{FLAG_STORAGE} from '../../dao/DataRepository'
 import LanguageDao,{FLAG_LANGUAGE} from '../../dao/LanguageDao'
+import FavoriteDao from '../../dao/FavoriteDao'
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import RepositoryCell from '../view/RepositoryCell'
+import ProjectModel from '../../model/ProjectModel'
 
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
+
+var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
 
 export default class FirstTabScreen extends Component<{}> {
   constructor(props){
@@ -74,32 +79,55 @@ class PopularTab extends Component{
     super(props);
     this.dataRepository = new DataRepository(FLAG_STORAGE.flag_popular);
     this.state={
-      result:'',
-      refresh:true
+      data:[],
+      refresh:true,
+      favoriteKeys:[]
     }
   }
   componentDidMount(){
     this.onLoad();
   }
+  getFavoriteKeys(){
+    favoriteDao.getFavoriteKeys()
+      .then(keys=>{
+        if (keys) {
+          this.setState({favoriteKeys:keys});
+        }
+        this.flushFavoriteState();
+      })
+      .catch(e=>{
+        this.flushFavoriteState();
+      })
+  }
+  //更新Project item 收藏状态
+  flushFavoriteState(){
+    let projectModels = [];
+    let items = this.items;
+    for (var i = 0; i < items.length; i++) {
+      projectModels.push(new ProjectModel(items[i],Utils.checkFavorite(items[i],this.state.favoriteKeys)));
+    }
+    this.setState({
+      data:projectModels,
+      refresh:false
+    });
+  }
   onLoad(){
+    this.setState({
+        refresh:true
+    });
     let url = this.genURL(this.props.tabLabel);
     this.dataRepository.fetchRepository(url)
         .then(result=>{
-          let items = result&&result.items?result.items:result?result:[];
-          this.setState({
-            data:items,
-            refresh:false
-          });
+          this.items = result&&result.items?result.items:result?result:[];
+          this.getFavoriteKeys();
           if (result&&result.update_date&&!this.dataRepository.checkData(result.update_date)) {
             return this.dataRepository.fetchNewRepository(url);
           }
         })
         .then(items=>{
           if(!items||items.length==0)return;
-          this.setState({
-            data:items,
-            refresh:false
-          });
+          this.items = items;
+          this.getFavoriteKeys();
         })
         .catch(error=>{
           console.log(error);
@@ -109,29 +137,34 @@ class PopularTab extends Component{
     return URL+text+QUERY_STR;
   }
 
-  _renderItem = ({item}) => (
+  _renderItem = (aa) => (
       <RepositoryCell
-       onSelect={()=>{
-         this.props.navigator.push({
-           screen: 'com.fof.RepositoryDetail',
-           title: item.full_name,
-           passProps:{
-             item:item
-           },
-           navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
-               tabBarHidden: true
-           }
-         });
-       }}
-       data= {item}/>
+        data= {aa.item}
+        onFavorite={(item,isFavorite)=>{
+          if (isFavorite) {
+            favoriteDao.saveFavoriteItem(item.id.toString(),JSON.stringify(item));
+          }else {
+            favoriteDao.removeFavoriteItem(item.id.toString());
+          }
+        }}
+        onSelect={()=>{
+           this.props.navigator.push({
+             screen: 'com.fof.RepositoryDetail',
+             title: aa.item.item.full_name,
+             passProps:{
+               item:aa.item.item
+             },
+             navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
+                 tabBarHidden: true
+             }
+           });
+         }}
+       />
     );
 
-  _keyExtractor = (item, index) => index;
+  _keyExtractor = (projectModel, index) => index;
 
   _onRefresh = () => {
-      this.setState({
-          refresh:true
-      });
       this.onLoad();
   }
   render(){

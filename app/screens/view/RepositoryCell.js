@@ -10,27 +10,56 @@ import {
 
 export default class RepositoryCell extends Component{
 
+  constructor(props){
+    super(props);
+    this.state={
+      isFavorite:props.data.isFavorite,
+      favoriteIcon:props.data.isFavorite?require('../../../img/ic_star.png'):require('../../../img/ic_unstar_transparent.png')
+    }
+  }
+  setFavoriteState(isFavorite){
+    this.setState({
+      isFavorite:isFavorite,
+      favoriteIcon:isFavorite?require('../../../img/ic_star.png'):require('../../../img/ic_unstar_transparent.png')
+    })
+  }
+  _onPressFavorite(){
+    this.setFavoriteState(!this.state.isFavorite);
+    this.props.onFavorite(this.props.data.item,!this.state.isFavorite);
+  }
+  componentWillReceiveProps(nextProps){
+    this.setFavoriteState(nextProps.data.isFavorite);
+  }
   render(){
+    let data  = this.props.data.item;
+    let favoriteButton = <TouchableOpacity
+      onPress={()=>{
+        this._onPressFavorite();
+      }}
+    >
+      <Image style={{width:22,height:22,tintColor:'#2196F3'}}
+             source={this.state.favoriteIcon}/>
+    </TouchableOpacity>
     return (
       <TouchableOpacity
       onPress={this.props.onSelect}
       style={styles.container}
       >
         <View style={styles.cell_container}>
-          <Text style={styles.title}>{this.props.data.full_name}</Text>
-          <Text style={styles.description}>{this.props.data.description}</Text>
+          <Text style={styles.title}>{data.full_name}</Text>
+          <Text style={styles.description}>{data.description}</Text>
           <View style={{flexDirection:'row',justifyContent:'space-between'}}>
             <View style={{flexDirection:'row',alignItems:'center'}}>
               <Text>Author:</Text>
               <Image
                 style={{height:22,width:22}}
-                source={{uri:this.props.data.owner.avatar_url}}/>
+                source={{uri:data.owner.avatar_url}}/>
             </View>
             <View style={{flexDirection:'row',alignItems:'center'}}>
               <Text>Stars:</Text>
-              <Text>{this.props.data.stargazers_count}</Text>
+              <Text>{data.stargazers_count}</Text>
             </View>
-            <Image style={{width:22,height:22}} source={require('../../../img/ic_star.png')}/>
+            {favoriteButton}
           </View>
         </View>
       </TouchableOpacity>

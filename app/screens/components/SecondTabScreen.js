@@ -14,12 +14,15 @@ import {
 } from 'react-native';
 
 import HttpUtils from '../../Vendor/HttpUtils'
+import Utils from '../../Vendor/Utils'
 import DataRepository,{FLAG_STORAGE} from '../../dao/DataRepository'
 import LanguageDao,{FLAG_LANGUAGE} from '../../dao/LanguageDao'
+import FavoriteDao from '../../dao/FavoriteDao'
 import TrendingCell from '../view/TrendingCell'
 import TimeSpan from '../../model/TimeSpan'
 import CustomTopBar from '../view/CustomTopBar'
 import Popover from '../../Vendor/Popover'
+import ProjectModel from '../../model/ProjectModel'
 
 import {Navigation} from 'react-native-navigation';
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
@@ -29,6 +32,8 @@ Navigation.registerComponent('com.fof.CustomTopBar', () => CustomTopBar);
 var timeSpanTextArray = [new TimeSpan('今天','since=daily'),new TimeSpan('本周','since=weekly'),new TimeSpan('本月','since=nmonlly')];
 const API_URL = 'https://github.com/trending/';
 
+var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
+var dataRepository = new DataRepository(FLAG_STORAGE.flag_trending);
 
 export default class SecondTabScreen extends Component<{}> {
   constructor(props){
@@ -109,35 +114,53 @@ export default class SecondTabScreen extends Component<{}> {
 class TrendingTab extends Component{
   constructor(props){
     super(props);
-    this.dataRepository = new DataRepository(FLAG_STORAGE.flag_trending);
     this.state={
-      result:'',
-      refresh:true
+      data:[],
+      refresh:true,
+      favoriteKeys:[]
     }
   }
   componentDidMount(){
     this.onLoad();
   }
+  getFavoriteKeys(){
+    favoriteDao.getFavoriteKeys()
+      .then(keys=>{
+        if (keys) {
+          this.setState({favoriteKeys:keys});
+        }
+        this.flushFavoriteState();
+      })
+      .catch(e=>{
+        this.flushFavoriteState();
+      })
+  }
+  //更新Project item 收藏状态
+  flushFavoriteState(){
+    let projectModels = [];
+    let items = this.items;
+    for (var i = 0; i < items.length; i++) {
+      projectModels.push(new ProjectModel(items[i],Utils.checkFavorite(items[i],this.state.favoriteKeys)));
+    }
+    this.setState({
+      data:projectModels,
+      refresh:false
+    });
+  }
   onLoad(){
     let url = this.genURL('?since=daily',this.props.tabLabel);
-    this.dataRepository.fetchRepository(url)
+    dataRepository.fetchRepository(url)
         .then(result=>{
-          console.log('result-----'+result);
-          let items = result&&result.items?result.items:result?result:[];
-          this.setState({
-            data:items,
-            refresh:false
-          });
-          if (result&&result.update_date&&!this.dataRepository.checkData(result.update_date)) {
-            return this.dataRepository.fetchNewRepository(url);
+          this.items = result&&result.items?result.items:result?result:[];
+          this.getFavoriteKeys();
+          if (result&&result.update_date&&!dataRepository.checkData(result.update_date)) {
+            return dataRepository.fetchNewRepository(url);
           }
         })
         .then((items)=>{
           if(!items||items.length==0)return;
-          this.setState({
-            data:items,
-            refresh:false
-          });
+          this.items = items;
+          this.getFavoriteKeys();
         })
         .catch(error=>{
           this.setState({
@@ -150,15 +173,22 @@ class TrendingTab extends Component{
     return API_URL+category+'?'+timeSpan.searchText;
   }
 
-  _renderItem = ({item}) => (
+  _renderItem = (bb) => (
       <TrendingCell
-       aa = {item}
+       aa = {bb.item}
+       onFavorite={(item,isFavorite)=>{
+         if (isFavorite) {
+           favoriteDao.saveFavoriteItem(item.fullName,JSON.stringify(item));
+         }else {
+           favoriteDao.removeFavoriteItem(item.fullName);
+         }
+       }}
        onSelect={()=>{
          this.props.navigator.push({
            screen: 'com.fof.RepositoryDetail',
-           title: item.fullName,
+           title: bb.item.item.fullName,
            passProps:{
-             item:item
+             item:bb.item.item
            },
            navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
                tabBarHidden: true
