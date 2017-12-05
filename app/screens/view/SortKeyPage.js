@@ -38,7 +38,7 @@ export default class SortKeyPage extends Component<{}> {
     this.state={
       checkedArray:[]
     }
-    this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
+    this.languageDao = new LanguageDao(this.props.flag);
     this.props.navigator.setOnNavigatorEvent((event)=>{
       console.log(event.type);
       if (event.type == 'NavBarButtonPress') { // this is the event type for button presses

@@ -43,7 +43,7 @@ export default class CustomeKeyPage extends Component<{}> {
       ],
       animated: false
     });
-    this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
+    this.languageDao = new LanguageDao(this.props.flag);
     this.state={
       dataArray:[]
     }

@@ -14,6 +14,7 @@ import {
 
 import CustomeKeyPage from '../view/CustomeKeyPage'
 import SortKeyPage from '../view/SortKeyPage'
+import {FLAG_LANGUAGE} from '../../dao/LanguageDao'
 
 export default class FourTabScreen extends Component<{}> {
   render() {
@@ -24,6 +25,9 @@ export default class FourTabScreen extends Component<{}> {
             this.props.navigator.push({
                 screen: 'com.fof.CustomeKeyPage',
                 title: '自定义标签',
+                passProps:{
+                  flag:FLAG_LANGUAGE.flag_key
+                },
                 navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
                     tabBarHidden: true
                 }
@@ -32,12 +36,30 @@ export default class FourTabScreen extends Component<{}> {
         >
         自定义标签
         </Text>
-
+        <Text style={styles.welcome}
+          onPress={()=>{
+            this.props.navigator.push({
+                screen: 'com.fof.CustomeKeyPage',
+                title: '趋势自定义语言',
+                passProps:{
+                  flag:FLAG_LANGUAGE.flag_language
+                },
+                navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
+                    tabBarHidden: true
+                }
+            });
+          }}
+        >
+        趋势自定义语言
+        </Text>
         <Text style={styles.welcome}
           onPress={()=>{
             this.props.navigator.push({
                 screen: 'com.fof.SortKeyPage',
-                title: '排序',
+                title: '标签排序',
+                passProps:{
+                  flag:FLAG_LANGUAGE.flag_key
+                },
                 navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
                     tabBarHidden: true
                 }
@@ -49,10 +71,27 @@ export default class FourTabScreen extends Component<{}> {
         <Text style={styles.welcome}
           onPress={()=>{
             this.props.navigator.push({
+                screen: 'com.fof.SortKeyPage',
+                title: '语言排序',
+                passProps:{
+                  flag:FLAG_LANGUAGE.flag_language
+                },
+                navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
+                    tabBarHidden: true
+                }
+            });
+          }}
+        >
+        语言排序
+        </Text>
+        <Text style={styles.welcome}
+          onPress={()=>{
+            this.props.navigator.push({
                 screen: 'com.fof.CustomeKeyPage',
                 title: '标签移除',
                 passProps:{
-                  isRemoveKey:true
+                  isRemoveKey:true,
+                  flag:FLAG_LANGUAGE.flag_key
                 },
                 navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
                     tabBarHidden: true
@@ -61,6 +100,23 @@ export default class FourTabScreen extends Component<{}> {
           }}
         >
         标签移除
+        </Text>
+        <Text style={styles.welcome}
+          onPress={()=>{
+            this.props.navigator.push({
+                screen: 'com.fof.CustomeKeyPage',
+                title: '语言移除',
+                passProps:{
+                  isRemoveKey:true,
+                  flag:FLAG_LANGUAGE.flag_language
+                },
+                navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
+                    tabBarHidden: true
+                }
+            });
+          }}
+        >
+        语言移除
         </Text>
       </View>
     );
