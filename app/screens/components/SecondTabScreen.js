@@ -10,7 +10,8 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList
+  FlatList,
+  DeviceEventEmitter
 } from 'react-native';
 
 import HttpUtils from '../../Vendor/HttpUtils'
@@ -122,6 +123,14 @@ class TrendingTab extends Component{
   }
   componentDidMount(){
     this.onLoad();
+    this.listner = DeviceEventEmitter.addListener('favoriteChanged_trending',()=>{
+      this.getFavoriteKeys();
+    })
+  }
+  componentWillUnmount(){
+    if (this.listner) {
+      this.listner.remove();
+    }
   }
   getFavoriteKeys(){
     favoriteDao.getFavoriteKeys()

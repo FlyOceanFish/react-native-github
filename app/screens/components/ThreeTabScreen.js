@@ -10,11 +10,14 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList
+  FlatList,
+  DeviceEventEmitter
 } from 'react-native';
 
 import HttpUtils from '../../Vendor/HttpUtils'
 import Utils from '../../Vendor/Utils'
+import ArrayUtils from '../../Vendor/ArrayUtils'
+
 import DataRepository,{FLAG_STORAGE} from '../../dao/DataRepository'
 import FavoriteDao from '../../dao/FavoriteDao'
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
@@ -52,6 +55,7 @@ export default class ThreeTabScreen extends Component<{}> {
 class FavoriteTab extends Component{
   constructor(props){
     super(props);
+    this.unFavoriteItems = [];
     this.dataRepository = new DataRepository(props.flag);
     this.favoriteDao = new FavoriteDao(props.flag);
     this.state={
@@ -62,30 +66,6 @@ class FavoriteTab extends Component{
   }
   componentDidMount(){
     this.onLoad();
-  }
-  getFavoriteKeys(){
-    favoriteDao.getFavoriteKeys()
-      .then(keys=>{
-        if (keys) {
-          this.setState({favoriteKeys:keys});
-        }
-        this.flushFavoriteState();
-      })
-      .catch(e=>{
-        this.flushFavoriteState();
-      })
-  }
-  //更新Project item 收藏状态
-  flushFavoriteState(){
-    let projectModels = [];
-    let items = this.items;
-    for (var i = 0; i < items.length; i++) {
-      projectModels.push(new ProjectModel(items[i],Utils.checkFavorite(items[i],this.state.favoriteKeys)));
-    }
-    this.setState({
-      data:projectModels,
-      refresh:false
-    });
   }
   onLoad(){
     this.setState({
@@ -108,27 +88,47 @@ class FavoriteTab extends Component{
         })
       })
   }
+  componentWillUnmount(){
+    this.timer&&clearTimeout(this.timer);
+  }
   renderRow(aa){
-    let CellComponent = this.props.flag === FLAG_STORAGE.flag_popular ? RepositoryCell : TrendingRepoCell;
+    let CellComponent = this.props.flag === FLAG_STORAGE.flag_popular ? RepositoryCell : TrendingCell;
     //必须用大写，小写报错
       return <CellComponent
         data= {aa.item}
         aa ={aa.item}
         onFavorite={(item,isFavorite)=>{
-          let key = item.id.toString()?item.id.toString():item.fullName;
+          this.onLoad();
+          var key = this.props.flag === FLAG_STORAGE.flag_popular ? item.id.toString() : item.fullName;
           if (isFavorite) {
-            favoriteDao.saveFavoriteItem(key,JSON.stringify(item));
+            this.favoriteDao.saveFavoriteItem(key,JSON.stringify(item));
           }else {
-            favoriteDao.removeFavoriteItem(key);
+            this.favoriteDao.removeFavoriteItem(key);
+          }
+          ArrayUtils.updateArray(this.unFavoriteItems,item);
+          if (this.unFavoriteItems.length>0) {
+            if (this.props.flag===FLAG_STORAGE.flag_popular) {
+              this.timer = setTimeout(()=>{
+                //一定要适当的延迟一下，因为AsyncStorage可能还没完全移除掉相应的key。
+                DeviceEventEmitter.emit('favoriteChanged_popular');
+              },500)
+            }else {
+              this.timer = setTimeout(()=>{
+                //一定要适当的延迟一下，因为AsyncStorage可能还没完全移除掉相应的key。
+                DeviceEventEmitter.emit('favoriteChanged_trending');
+              },500)
+            }
           }
         }}
         onSelect={()=>{
+          let projectModel = aa.item;
            this.props.navigator.push({
              screen: 'com.fof.RepositoryDetail',
-             title: aa.item.item.full_name,
+             title: projectModel.item.full_name?projectModel.item.full_name:projectModel.item.fullName,
              passProps:{
-               item:aa.item.item,
-               isFavorite:aa.item.isFavorite,
+               projectModel:projectModel,
+               item:projectModel.item,
+               isFavorite:projectModel.isFavorite,
                flag:this.props.flag
              },
              navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
