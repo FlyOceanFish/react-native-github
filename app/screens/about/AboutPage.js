@@ -9,7 +9,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Platform
+  Platform,
+  Linking
 } from 'react-native';
 
 import Utils from '../../Vendor/Utils'
@@ -17,6 +18,7 @@ import {MORE_MENU} from '../view/MoreMenu'
 import {FLAG_LANGUAGE} from '../../dao/LanguageDao'
 import GlobalStyles from '../res/GlobalStyles'
 import AboutCommon,{FLAG_ABOUT} from './AboutCommon'
+import WebViewPage from '../view/WebViewPage'
 
 export default class AboutPage extends Component<{}> {
     constructor(props) {
@@ -27,20 +29,24 @@ export default class AboutPage extends Component<{}> {
       this.setState(dic);
     }
     onClick(tag){
-      let targetComponent,title,params={menuType:tag,flag:''};
+      let targetComponent,title,params={menuType:tag,};
       switch (tag) {
         case MORE_MENU.About_Author:
-          targetComponent = 'com.fof.CustomeKeyPage';
-          params.flag = FLAG_LANGUAGE.flag_language;
-          title='自定义语言';
+          targetComponent = 'com.fof.WebViewPage';
+          params.url='http://flyoceanfish.top/';
+          title='OceanFish的博客';
           break;
           case MORE_MENU.WebSite:
-            targetComponent = 'com.fof.CustomeKeyPage';
-            params.flag = FLAG_LANGUAGE.flag_key;
-            title='自定义标签';
             break;
           case MORE_MENU.Feedback:
-            targetComponent = 'com.fof.AboutPage';
+          let url = 'mailto://978456068@qq.com';
+          Linking.canOpenURL(url).then(supported => {
+                if (!supported) {
+                  console.log('Can\'t handle url: ' + url);
+                } else {
+                  return Linking.openURL(url);
+                }
+              }).catch(err => console.error('An error occurred', err));
             break;
       }
       if (targetComponent) {
@@ -48,9 +54,9 @@ export default class AboutPage extends Component<{}> {
             screen: targetComponent,
             title: title,
             passProps:params,
+            backButtonTitle:'',
             navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
                 tabBarHidden: true,
-                navBarHidden: tag===MORE_MENU.About?true:false
             }
         });
       }

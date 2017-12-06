@@ -26,6 +26,10 @@ export default class AboutCommon{
       this.updateState = updateState;
       this.flag_about = flag_about
     }
+    //通知数据发生改变
+    onNotifyDataChanged(items){
+      
+    }
     getParallaxRenderConfig(params){
       let config = {};
       config.renderBackground=() => (
