@@ -17,18 +17,98 @@ import Utils from '../../Vendor/Utils'
 import {MORE_MENU} from '../view/MoreMenu'
 import {FLAG_LANGUAGE} from '../../dao/LanguageDao'
 import GlobalStyles from '../res/GlobalStyles'
+import FavoriteDao from '../../dao/FavoriteDao'
+import {FLAG_STORAGE} from '../../dao/DataRepository'
+import ProjectModel from '../../model/ProjectModel'
+import RepositoryCell from '../view/RepositoryCell'
+import RepositoryUtils from '../../dao/RepositoryUtils'
 
 export var FLAG_ABOUT={flag_about:'about',flag_about_me:'about_me'}
 
 export default class AboutCommon{
-    constructor(props,updateState,flag_about) {
+    constructor(props,updateState,flag_about,config) {
       this.props = props;
+      this.config = config;
       this.updateState = updateState;
       this.flag_about = flag_about
+      this.respositories = [];
+      this.favoriteKeys = null;
+      this.favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
+      this.repositoryUtils = new RepositoryUtils(this);
+    }
+    componentDidMount(){
+      if(this.flag_about==FLAG_ABOUT.flag_about){
+        this.repositoryUtils.fetchRepository(this.config.info.currentRepoUrl)
+      }else{
+        let urls = [];
+        let items = this.config.items;
+        for (var i = 0; i < items.length; i++) {
+          urls.push(this.config.info.url+items[i]);
+        }
+        this.respositories.fetchRepository(urls);
+      }
     }
     //通知数据发生改变
     onNotifyDataChanged(items){
-      
+      this.updateFavorite(items);
+    }
+    // 更新项目的用户收藏状态
+    async updateFavorite(respositories){
+      if (respositories) {
+        this.respositories = respositories;
+      }
+      if (!this.respositories) return;
+      if (!this.favoriteKeys) {
+        this.favoriteKeys = await this.favoriteDao.getFavoriteKeys()
+      }
+      let projectModels = [];
+      for (var i = 0; i < this.respositories.length; i++) {
+        let data = this.respositories[i];
+        data = data.items?data.items:data;
+        projectModels.push({
+          isFavorite:Utils.checkFavorite(data,this.favoriteKeys?this.favoriteKeys:null),
+          item:data
+        });
+      }
+      this.updateState({
+        projectModels:projectModels
+      });
+    }
+    // 创建项目视图
+    renderRepository(projectModels){
+      if(!projectModels||projectModels.length===0)return null;
+      let views = [];
+      for (var i = 0; i < projectModels.length; i++) {
+        let projectModel = projectModels[i];
+        views.push(
+          <RepositoryCell
+            key = {i}
+            data= {projectModel}
+            onFavorite={(item,isFavorite)=>{
+              if (isFavorite) {
+                this.favoriteDao.saveFavoriteItem(item.id.toString(),JSON.stringify(item));
+              }else {
+                this.favoriteDao.removeFavoriteItem(item.id.toString());
+              }
+            }}
+            onSelect={()=>{
+               this.props.navigator.push({
+                 screen: 'com.fof.RepositoryDetail',
+                 title: projectModel.item.full_name,
+                 passProps:{
+                   item:projectModel.item,
+                   isFavorite:projectModel.item.isFavorite,
+                   flag:FLAG_STORAGE.flag_popular
+                 },
+                 navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
+                     tabBarHidden: true
+                 }
+               });
+             }}
+           />
+        )
+      }
+      return views;
     }
     getParallaxRenderConfig(params){
       let config = {};

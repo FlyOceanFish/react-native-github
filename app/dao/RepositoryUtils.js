@@ -3,9 +3,10 @@ import {
     AsyncStorage,
 } from 'react-native';
 
-import Utils from './Utils'
+import Utils from '../Vendor/Utils'
 
-import DataRepository, {FLAG_STORAGE} from '../app/dao/DataRepository'
+import DataRepository, {FLAG_STORAGE} from './DataRepository'
+
 export default class RepositoryUtils {
     constructor(aboutCommon) {
         this.aboutCommon = aboutCommon;
@@ -35,9 +36,9 @@ export default class RepositoryUtils {
             .then(result=> {
                 if (result) {
                     this.updateData(url,result);
-                    if (!Utils.checkDate(result.update_date))return this.dataRepository.fetchNetRepository(url);
+                    if (!Utils.checkDate(result.update_date))return this.dataRepository.fetchNewRepository(url);
                 } else {
-                    return this.dataRepository.fetchNetRepository(url);
+                    return this.dataRepository.fetchNewRepository(url);
                 }
             })
             .then((item)=> {

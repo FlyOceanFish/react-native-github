@@ -8,7 +8,7 @@ import {
 }from 'react-native'
 export default class Utils{
   // 检查项目更新时间
-  static checkData(longTime){
+  static checkDate(longTime){
     let cDate = new Date();
     let tDate = new Date();
     tDate.setTime(longTime)

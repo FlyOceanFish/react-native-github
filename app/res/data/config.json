@@ -1,0 +1,23 @@
+{
+  "items": [
+    "react-native-github",
+    "react-native-segmentControl",
+    "YTOSectionsViewController",
+    "UIViewController-Presenter",
+    "FlyOceanMovies",
+  ],
+  "info": {
+    "html_url": "https://github.com/FlyOceanFish",
+    "url": "https://api.github.com/repos/FlyOceanFish/",
+    "currentRepoUrl": "https://api.github.com/repos/FlyOceanFish/react-native-github"
+  },
+  "author": {
+    "name": "OceanFish",
+    "description": "You believe,you can !",
+    "avatar": "http://upload.jianshu.io/users/upload_avatars/6644906/7cf559d4-b889-4cd2-8f42-686f99b97e92.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/240/h/240",
+    "backgroundImg": "http://www.wallcoo.com/other/201603_March_calendar_wallpapers/wallpapers/1680x1050/mar-16-spring-is-inevitable-cal.jpg",
+    "avatar1": "http://upload.jianshu.io/users/upload_avatars/6644906/7cf559d4-b889-4cd2-8f42-686f99b97e92.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/240/h/240",
+    "backgroundImg1": "http://www.rui2.net/uploadfile/output/2015/0322/44b845bf8ae757a2.jpg",
+    "url": "http://flyoceanfish.top/"
+  }
+}

@@ -70,8 +70,13 @@ export default class DataRepository{
           .then(response=>response.json())
           .then(result=>{
             if (result) {
-              resolve(result.items);
-              this.saveRepository(url,result.items)
+              if (this.flag===FLAG_STORAGE.flag_my) {
+                this.saveRepository(url,result)
+                resolve(result);
+              }else {
+                this.saveRepository(url,result.items)
+                resolve(result.items);
+              }
             }else {
               reject(new Error('数据为空'))
             }

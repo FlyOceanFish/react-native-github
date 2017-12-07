@@ -132,7 +132,7 @@ class PopularTab extends Component{
         .then(result=>{
           this.items = result&&result.items?result.items:result?result:[];
           this.getFavoriteKeys();
-          if (result&&result.update_date&&!Utils.checkData(result.update_date)) {
+          if (result&&result.update_date&&!Utils.checkDate(result.update_date)) {
             return this.dataRepository.fetchNewRepository(url);
           }
         })
