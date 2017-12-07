@@ -45,7 +45,7 @@ export default class AboutCommon{
         for (var i = 0; i < items.length; i++) {
           urls.push(this.config.info.url+items[i]);
         }
-        this.respositories.fetchRepository(urls);
+        this.repositoryUtils.fetchRepositories(urls);
       }
     }
     //通知数据发生改变

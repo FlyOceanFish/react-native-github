@@ -57,6 +57,8 @@ export default class FourTabScreen extends Component<{}> {
         case MORE_MENU.Custom_Them:
           break;
         case MORE_MENU.About_Author:
+          targetComponent = 'com.fof.AboutMe';
+          title='关于作者';
           break;
         case MORE_MENU.About:
           targetComponent = 'com.fof.AboutPage';
@@ -69,7 +71,7 @@ export default class FourTabScreen extends Component<{}> {
           passProps:params,
           navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
               tabBarHidden: true,
-              navBarHidden: tag===MORE_MENU.About?true:false
+              navBarHidden: tag===MORE_MENU.About||MORE_MENU.About_Author?true:false
           }
       });
     }

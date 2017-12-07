@@ -35,7 +35,30 @@ export default class FirstTabScreen extends Component<{}> {
     this.state={
       languages:[]
     }
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    this.props.navigator.setButtons({
+      rightButtons: [
+        {
+          icon:require('../../../img/ic_search_white_48pt.png'),
+          id: 'search',
+        }
+      ],
+      animated: false
+    });
   }
+  
+  onNavigatorEvent(event) {
+  if (event.type == 'NavBarButtonPress') {
+    if (event.id == 'search') {
+      this.props.navigator.push({
+        screen:'com.fof.SearchPage',
+        navigatorStyle:{
+          tabBarHidden: true
+        }
+      })
+    }
+  }
+}
   componentDidMount(){
     this._loadData();
   }

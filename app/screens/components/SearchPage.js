@@ -13,6 +13,10 @@ import {
 
 import FavoriteDao from '../../dao/FavoriteDao'
 import {FLAG_STORAGE} from '../../dao/DataRepository'
+import CustomSearchView from '../view/CustomSearchView'
+import {Navigation} from 'react-native-navigation';
+
+Navigation.registerComponent('com.fof.CustomSearchView', () => CustomSearchView);
 
 export default class SearchPage extends Component<{}> {
   constructor(props){
@@ -25,12 +29,21 @@ export default class SearchPage extends Component<{}> {
     let icon = props.isFavorite?require('../../../img/ic_star.png'):require('../../../img/ic_unstar_transparent.png');
     this.setNavigatorRightButtonImage(icon)
   }
+  componentDidMount(){
+      this.props.navigator.setStyle({
+      navBarCustomView: 'com.fof.CustomSearchView',
+      navBarComponentAlignment: 'center',
+      navBarCustomViewInitialProps: {title: 'Hi Custom',aa:(button)=>{
+
+      }}
+    });
+  }
   setNavigatorRightButtonImage(icon){
     this.props.navigator.setButtons({
       rightButtons: [
         {
-          icon:icon,
-          id: 'favorite',
+          title:'搜索',
+          id: 'search',
         }
       ],
       animated: false
@@ -38,29 +51,15 @@ export default class SearchPage extends Component<{}> {
   }
   onNavigatorEvent(event) {
   if (event.type == 'NavBarButtonPress') {
-    if (event.id == 'favorite') {
-      this.setState({
-        isFavorite:!this.state.isFavorite
-      });
-      let icon = this.state.isFavorite?require('../../../img/ic_star.png'):require('../../../img/ic_unstar_transparent.png');
-      this.setNavigatorRightButtonImage(icon);
-      var projectModel = this.props.item;
-      var key = projectModel.fullName?projectModel.fullName:projectModel.id.toString();
-      if (this.state.isFavorite) {
-        this.favoriteDao.saveFavoriteItem(key,JSON.stringify(projectModel));
-      }else {
-        this.favoriteDao.removeFavoriteItem(key);
-      }
+    if (event.id == 'search') {
+
     }
   }
 }
   render() {
     return (
       <View style={styles.container}>
-          <WebView source={{uri: this.props.item.html_url}}
-                   style={{flex:1}}
-                   startInLoadingState={true}
-                   />
+
       </View>
     );
   }
