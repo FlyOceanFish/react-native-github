@@ -47,7 +47,7 @@ export default class SearchPage extends Component<{}> {
     let icon = props.isFavorite?require('../../../img/ic_star.png'):require('../../../img/ic_unstar_transparent.png');
     this.setNavigatorRightButton(this.rightButtonText);
   }
-  componentWillMount(){
+  componentDidMount(){
       this.props.navigator.setStyle({
       navBarCustomView: 'com.fof.CustomSearchView',
       navBarComponentAlignment: 'center',
