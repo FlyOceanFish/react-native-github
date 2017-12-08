@@ -26,6 +26,8 @@ import ProjectModel from '../../model/ProjectModel'
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
 
+export const ACTION_HOME={A_UPDATE_FAVORITE:'updateFavorite',A_RESTART:'restart'}
+
 var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
 
 export default class FirstTabScreen extends Component<{}> {
@@ -46,7 +48,7 @@ export default class FirstTabScreen extends Component<{}> {
       animated: false
     });
   }
-  
+
   onNavigatorEvent(event) {
   if (event.type == 'NavBarButtonPress') {
     if (event.id == 'search') {
@@ -110,8 +112,19 @@ class PopularTab extends Component{
   }
   componentDidMount(){
     this.onLoad();
-    this.listner = DeviceEventEmitter.addListener('favoriteChanged_popular',()=>{
-      this.getFavoriteKeys();
+    this.listner = DeviceEventEmitter.addListener('ACTION_HOME',(action,params)=>{
+      if (ACTION_HOME.A_RESTART===action) {
+        this.onRestart();
+      }else if (ACTION_HOME.A_UPDATE_FAVORITE===action) {
+        this.getFavoriteKeys();
+      }
+    })
+  }
+  // 重启首页
+  onRestart(jumpToTab){
+    this.props.navigator.resetTo({
+      screen:'com.fof.FirstTabScreen',
+      title:'最热'
     })
   }
   componentWillReceiveProps(newProps){

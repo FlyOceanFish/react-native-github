@@ -14,7 +14,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Text,
-  Dimensions
+  Dimensions,
+  DeviceEventEmitter
 } from 'react-native';
 
 import FavoriteDao from '../../dao/FavoriteDao'
@@ -25,7 +26,7 @@ import {Navigation} from 'react-native-navigation';
 import RepositoryCell from '../view/RepositoryCell'
 import ProjectModel from '../../model/ProjectModel'
 import Utils from '../../Vendor/Utils'
-
+import {ACTION_HOME} from './FirstTabScreen'
 const API_URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
 
@@ -41,11 +42,17 @@ export default class SearchPage extends Component<{}> {
       showBottomButton:false
     }
     this.rightButtonText = '搜索';
+    this.isChanged = false;
     this.favoriteDao = new FavoriteDao(props.flag);
     this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     let icon = props.isFavorite?require('../../../img/ic_star.png'):require('../../../img/ic_unstar_transparent.png');
     this.setNavigatorRightButton(this.rightButtonText);
+  }
+  componentWillUnmount(){
+    if (this.isChanged) {
+      DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_RESTART);
+    }
   }
   componentDidMount(){
       this.props.navigator.setStyle({
@@ -72,6 +79,7 @@ export default class SearchPage extends Component<{}> {
         }
         this.keys.unshift(key);
         this.languageDao.save(this.keys);
+        this.isChanged = true;
         console.log('保存成功');
     }
   }

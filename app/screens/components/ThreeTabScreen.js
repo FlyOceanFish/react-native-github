@@ -24,6 +24,7 @@ import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-vi
 import RepositoryCell from '../view/RepositoryCell'
 import ProjectModel from '../../model/ProjectModel'
 import TrendingCell from '../view/TrendingCell'
+import {ACTION_HOME} from './FirstTabScreen'
 
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
@@ -110,7 +111,7 @@ class FavoriteTab extends Component{
             if (this.props.flag===FLAG_STORAGE.flag_popular) {
               this.timer = setTimeout(()=>{
                 //一定要适当的延迟一下，因为AsyncStorage可能还没完全移除掉相应的key。
-                DeviceEventEmitter.emit('favoriteChanged_popular');
+                DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_UPDATE_FAVORITE);
               },500)
             }else {
               this.timer = setTimeout(()=>{
