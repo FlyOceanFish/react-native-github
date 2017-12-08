@@ -27,6 +27,8 @@ import RepositoryCell from '../view/RepositoryCell'
 import ProjectModel from '../../model/ProjectModel'
 import Utils from '../../Vendor/Utils'
 import {ACTION_HOME} from './FirstTabScreen'
+import makeCancelable from '../../Vendor/Cancelable'
+
 const API_URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
 
@@ -53,6 +55,7 @@ export default class SearchPage extends Component<{}> {
     if (this.isChanged) {
       DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_RESTART);
     }
+    this.cancelable&&this.cancelable.cancel();
   }
   componentDidMount(){
       this.props.navigator.setStyle({
@@ -116,6 +119,7 @@ export default class SearchPage extends Component<{}> {
           this.onLoad();
           this.textInput.blur();
           this.rightButtonText = '取消';
+          this.cancelable.cancel();
         }else {
           this.rightButtonText = '搜索';
         }
@@ -152,7 +156,8 @@ export default class SearchPage extends Component<{}> {
         refresh:true
     });
     let url = this.genURL(this.inputText);
-    fetch(url)
+    this.cancelable = makeCancelable(fetch(url));
+    this.cancelable.promise
       .then(response=>response.json())
       .then(responseData=>{
         this.setNavigatorRightButton('搜索');
