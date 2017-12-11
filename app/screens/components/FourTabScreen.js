@@ -71,7 +71,7 @@ export default class FourTabScreen extends Component<{}> {
           passProps:params,
           navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
               tabBarHidden: true,
-              navBarHidden: tag===(MORE_MENU.About||MORE_MENU.About_Author)?true:false
+              navBarHidden: (tag===MORE_MENU.About||MORE_MENU.About_Author)?true:false
           }
       });
     }
