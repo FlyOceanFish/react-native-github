@@ -24,6 +24,7 @@ import TimeSpan from '../../model/TimeSpan'
 import CustomTopBar from '../view/CustomTopBar'
 import Popover from '../../Vendor/Popover'
 import ProjectModel from '../../model/ProjectModel'
+import BaseComponent from './BaseComponent'
 
 import {Navigation} from 'react-native-navigation';
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
@@ -36,14 +37,18 @@ const API_URL = 'https://github.com/trending/';
 var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_trending);
 var dataRepository = new DataRepository(FLAG_STORAGE.flag_trending);
 
-export default class SecondTabScreen extends Component<{}> {
+export default class SecondTabScreen extends BaseComponent<{}> {
   constructor(props){
     super(props);
+    this.props.navigator.setStyle({
+      navBarBackgroundColor: this.props.themeColor
+    });
     this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_language);
     this.state={
       languages:[],
       isVisible: false,
       buttonRect: {},
+      themeColor:this.props.themeColor
     }
   }
   componentDidMount(){
@@ -85,7 +90,7 @@ export default class SecondTabScreen extends Component<{}> {
   render() {
     let content = this.state.languages.length>0?
     <ScrollableTabView
-        tabBarBackgroundColor='#2196F3'
+        tabBarBackgroundColor={this.state.themeColor}
         tabBarInactiveTextColor='mintcream'
         tabBarActiveTextColor='white'
         tabBarUnderlineStyle={{backgroundColor:'#e7e7e7',height:2}}
@@ -94,7 +99,7 @@ export default class SecondTabScreen extends Component<{}> {
     >
     {this.state.languages.map((reuslt, i, arr)=> {
         let language = arr[i];
-        return language.checked ? <TrendingTab key={i} tabLabel={language.name} {...this.props}/> : null;
+        return language.checked ? <TrendingTab key={i} tabLabel={language.name} themeColor={this.state.themeColor}/> : null;
     })}
     </ScrollableTabView>:null;
     let timeSpan = <Popover
@@ -118,7 +123,8 @@ class TrendingTab extends Component{
     this.state={
       data:[],
       refresh:true,
-      favoriteKeys:[]
+      favoriteKeys:[],
+      themeColor:props.themeColor
     }
   }
   componentDidMount(){
@@ -130,6 +136,12 @@ class TrendingTab extends Component{
   componentWillUnmount(){
     if (this.listner) {
       this.listner.remove();
+    }
+  }
+  componentWillReceiveProps(newProps){
+    if (newProps.themeColor!==this.state.themeColor) {
+      this.setState({themeColor:newProps.themeColor});
+      this.flushFavoriteState();
     }
   }
   getFavoriteKeys(){
@@ -185,6 +197,7 @@ class TrendingTab extends Component{
   _renderItem = (bb) => (
       <TrendingCell
        aa = {bb.item}
+       themeColor={this.state.themeColor}
        onFavorite={(item,isFavorite)=>{
          if (isFavorite) {
            favoriteDao.saveFavoriteItem(item.fullName,JSON.stringify(item));

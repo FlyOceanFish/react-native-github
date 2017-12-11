@@ -22,6 +22,7 @@ import FavoriteDao from '../../dao/FavoriteDao'
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import RepositoryCell from '../view/RepositoryCell'
 import ProjectModel from '../../model/ProjectModel'
+import BaseComponent from './BaseComponent'
 
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
@@ -30,12 +31,16 @@ export const ACTION_HOME={A_UPDATE_FAVORITE:'updateFavorite',A_RESTART:'restart'
 
 var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
 
-export default class FirstTabScreen extends Component<{}> {
+export default class FirstTabScreen extends BaseComponent<{}> {
   constructor(props){
     super(props);
+    this.props.navigator.setStyle({
+      navBarBackgroundColor: this.props.themeColor
+    });
     this.languageDao = new LanguageDao(FLAG_LANGUAGE.flag_key);
     this.state={
-      languages:[]
+      languages:[],
+      themeColor:this.props.themeColor
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.props.navigator.setButtons({
@@ -64,6 +69,7 @@ export default class FirstTabScreen extends Component<{}> {
   componentDidMount(){
     this._loadData();
   }
+
   _loadData(){
     this.languageDao.fetch()
     .then(result=>{
@@ -80,7 +86,7 @@ export default class FirstTabScreen extends Component<{}> {
   render() {
     let content = this.state.languages.length>0?
     <ScrollableTabView
-        tabBarBackgroundColor='#2196F3'
+        tabBarBackgroundColor={this.state.themeColor}
         tabBarInactiveTextColor='mintcream'
         tabBarActiveTextColor='white'
         tabBarUnderlineStyle={{backgroundColor:'#e7e7e7',height:2}}
@@ -89,7 +95,7 @@ export default class FirstTabScreen extends Component<{}> {
     >
     {this.state.languages.map((reuslt, i, arr)=> {
         let language = arr[i];
-        return language.checked ? <PopularTab key={i} tabLabel={language.name} {...this.props}/> : null;
+        return language.checked ? <PopularTab key={i} tabLabel={language.name} themeColor={this.state.themeColor}/> : null;
     })}
     </ScrollableTabView>:null;
     return (
@@ -107,7 +113,8 @@ class PopularTab extends Component{
     this.state={
       data:[],
       refresh:true,
-      favoriteKeys:[]
+      favoriteKeys:[],
+      themeColor:props.themeColor
     }
   }
   componentDidMount(){
@@ -128,7 +135,10 @@ class PopularTab extends Component{
     })
   }
   componentWillReceiveProps(newProps){
-
+    if (newProps.themeColor!==this.state.themeColor) {
+      this.setState({themeColor:newProps.themeColor});
+      this.flushFavoriteState();
+    }
   }
   componentWillUnmount(){
     if (this.listner) {
@@ -188,6 +198,7 @@ class PopularTab extends Component{
   _renderItem = (aa) => (
       <RepositoryCell
         data= {aa.item}
+        themeColor={this.state.themeColor}
         onFavorite={(item,isFavorite)=>{
           if (isFavorite) {
             favoriteDao.saveFavoriteItem(item.id.toString(),JSON.stringify(item));

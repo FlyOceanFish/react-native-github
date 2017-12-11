@@ -103,7 +103,7 @@ export default class SortKeyPage extends Component<{}> {
             this.state.checkedArray.splice(e.to, 0, this.state.checkedArray.splice(e.from, 1)[0])
             this.forceUpdate()
           }}
-          renderRow={row => <SortCell data={row} />}
+          renderRow={row => <SortCell data={row} {...this.props}/>}
         />
       </View>
     );
@@ -120,7 +120,7 @@ class SortCell extends Component{
           {...this.props.sortHandlers}
         >
           <View style={styles.row}>
-            <Image style={styles.image} source={require('../../../img/ic_sort.png')}/>
+            <Image style={[styles.image,{tintColor:this.props.themeColor}]} source={require('../../../img/ic_sort.png')}/>
             <Text>{this.props.data.name}</Text>
           </View>
         </TouchableHighlight>

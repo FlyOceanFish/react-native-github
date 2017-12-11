@@ -21,11 +21,33 @@ import {FLAG_LANGUAGE} from '../../dao/LanguageDao'
 import {MORE_MENU} from '../view/MoreMenu'
 import GlobalStyles from '../res/GlobalStyles'
 import Utils from '../../Vendor/Utils'
+import CustomTheme from './CustomTheme'
+import BaseComponent from './BaseComponent'
 
-export default class FourTabScreen extends Component<{}> {
-
+export default class FourTabScreen extends BaseComponent<{}> {
+  constructor(props){
+    super(props);
+    this.props.navigator.setStyle({
+      navBarBackgroundColor: this.props.themeColor
+    });
+    this.state={
+      customThemeViewVisible:false,
+      themeColor:this.props.themeColor
+    }
+  }
+  renderCustomThemView(){
+    return(
+      <CustomTheme modalVisible={this.state.customThemeViewVisible}
+        onClose={()=>{
+          this.setState(
+            {customThemeViewVisible:false}
+          )
+        }}
+        />
+    )
+  }
   onClick(tag){
-    let targetComponent,title,params={menuType:tag,flag:''};
+    let targetComponent,title,params={menuType:tag,flag:'',themeColor:this.state.themeColor};
     switch (tag) {
       case MORE_MENU.Custom_Language:
         targetComponent = 'com.fof.CustomeKeyPage';
@@ -55,6 +77,9 @@ export default class FourTabScreen extends Component<{}> {
           title='语言排序';
           break;
         case MORE_MENU.Custom_Them:
+          this.setState({
+            customThemeViewVisible:true
+          })
           break;
         case MORE_MENU.About_Author:
           targetComponent = 'com.fof.AboutMe';
@@ -65,19 +90,20 @@ export default class FourTabScreen extends Component<{}> {
           break;
     }
     if (targetComponent) {
+      let isHidden = tag===MORE_MENU.About?true:tag===MORE_MENU.About_Author?true:false;
       this.props.navigator.push({
           screen: targetComponent,
           title: title,
           passProps:params,
           navigatorStyle:{//此方式与苹果原生的hideWhenPushed一致
               tabBarHidden: true,
-              navBarHidden: (tag===MORE_MENU.About||MORE_MENU.About_Author)?true:false
+              navBarHidden:isHidden
           }
       });
     }
   }
   getItem(tag,icon,text){
-    return Utils.getSettingItem(()=>this.onClick(tag),icon,text,{tintColor:'#2196F3'},null);
+    return Utils.getSettingItem(()=>this.onClick(tag),icon,text,{tintColor:this.state.themeColor},null);
   }
   render() {
     return (
@@ -89,11 +115,11 @@ export default class FourTabScreen extends Component<{}> {
             <View style={[styles.item,{height:90}]}>
               <View style={{flexDirection:'row',alignItems:'center'}}>
                 <Image source={require('../../../img/ic_trending.png')}
-                    style={[{width:40,height:40,marginRight:10},{tintColor:'#2196F3'}]}/>
+                    style={[{width:40,height:40,marginRight:10},{tintColor:this.state.themeColor}]}/>
                 <Text>GitHub Popular</Text>
               </View>
               <Image source={require('../../../img/ic_tiaozhuan.png')}
-                  style={[{marginRight:10,height:22,width:22},{tintColor:'#2196F3'}]}/>
+                  style={[{marginRight:10,height:22,width:22},{tintColor:this.state.themeColor}]}/>
             </View>
           </TouchableHighlight>
           <View style={GlobalStyles.line}/>
@@ -123,8 +149,8 @@ export default class FourTabScreen extends Component<{}> {
           {this.getItem(MORE_MENU.About_Author,require('../../../img/ic_insert_emoticon.png'),'关于作者')}
           <View style={GlobalStyles.line}/>
           {this.getItem(MORE_MENU.Custom_Them,require('../../../img/ic_view_quilt.png'),'自定义主题')}
-
         </ScrollView>
+        {this.renderCustomThemView()}
       </View>
     );
   }

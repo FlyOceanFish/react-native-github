@@ -50,7 +50,7 @@ export default class Utils{
             <Text>{text}</Text>
           </View>
           <Image source={expandableIcon?expandableIcon:require('../../img/ic_tiaozhuan.png')}
-              style={[{marginRight:10,height:22,width:22},{tintColor:'#2196F3'}]}/>
+              style={[{marginRight:10,height:22,width:22},tintStyle]}/>
         </View>
       </TouchableHighlight>
     )

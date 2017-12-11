@@ -129,7 +129,7 @@ export default class AboutMe extends Component<{}> {
             let title = isShowAccount ? dic[i].title + ':' + dic[i].account : dic[i].title;
             views.push(
                 <View key={i}>
-                    {Utils.getSettingItem(()=>this.onClick(dic[i]), '', title, {tintColor:'#2196F3'})}
+                    {Utils.getSettingItem(()=>this.onClick(dic[i]), '', title, {tintColor:this.props.themeColor})}
                     <View style={GlobalStyles.line}/>
                 </View>
             );
@@ -142,20 +142,20 @@ export default class AboutMe extends Component<{}> {
     }
     render(){
       let content = <View>
-        {Utils.getSettingItem(()=>this.onClick(FLAG.BLOG),require('../../../img/ic_computer.png'),FLAG.BLOG.name,{tintColor:'#2196F3'}
+        {Utils.getSettingItem(()=>this.onClick(FLAG.BLOG),require('../../../img/ic_computer.png'),FLAG.BLOG.name,{tintColor:this.props.themeColor}
           ,this.getClickIcon(this.state.showBlog))}
         <View style={GlobalStyles.line}/>
 
         {this.state.showBlog ? this.renderItems(FLAG.BLOG.items) : null}
 
         {Utils.getSettingItem(()=>this.onClick(FLAG.REPOSITORY), require('../../../img/ic_code.png'),
-            FLAG.REPOSITORY, {tintColor:'#2196F3'}, this.getClickIcon(this.state.showRepository))}
+            FLAG.REPOSITORY, {tintColor:this.props.themeColor}, this.getClickIcon(this.state.showRepository))}
         <View style={GlobalStyles.line}/>
         {this.state.showRepository ? this.aboutCommon.renderRepository(this.state.projectModels) : null}
 
 
         {Utils.getSettingItem(()=>this.onClick(FLAG.CONTACT), require('../../../img/ic_contacts.png'),
-            FLAG.CONTACT.name, {tintColor:'#2196F3'}, this.getClickIcon(this.state.showContact))}
+            FLAG.CONTACT.name, {tintColor:this.props.themeColor}, this.getClickIcon(this.state.showContact))}
         <View style={GlobalStyles.line}/>
         {this.state.showContact ? this.renderItems(FLAG.CONTACT.items, true) : null}
       </View>

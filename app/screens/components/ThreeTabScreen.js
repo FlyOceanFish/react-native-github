@@ -25,28 +25,35 @@ import RepositoryCell from '../view/RepositoryCell'
 import ProjectModel from '../../model/ProjectModel'
 import TrendingCell from '../view/TrendingCell'
 import {ACTION_HOME} from './FirstTabScreen'
+import BaseComponent from './BaseComponent'
 
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
 
-export default class ThreeTabScreen extends Component<{}> {
+export default class ThreeTabScreen extends BaseComponent<{}> {
   constructor(props){
     super(props);
+    this.props.navigator.setStyle({
+      navBarBackgroundColor: this.props.themeColor
+    });
+    this.state=({
+      themeColor:this.props.themeColor
+    })
   }
 
   render() {
     return (
       <View style={styles.container}>
         <ScrollableTabView
-            tabBarBackgroundColor='#2196F3'
+            tabBarBackgroundColor={this.state.themeColor}
             tabBarInactiveTextColor='mintcream'
             tabBarActiveTextColor='white'
             tabBarUnderlineStyle={{backgroundColor:'#e7e7e7',height:2}}
             renderTabBar={() => <ScrollableTabBar style={{height: 40, borderWidth: 0, elevation: 2}}
                                                   tabStyle={{height: 39}}/>}
         >
-          <FavoriteTab  tabLabel='最热' flag={FLAG_STORAGE.flag_popular} {...this.props}/>
-          <FavoriteTab  tabLabel='趋势' flag={FLAG_STORAGE.flag_trending} {...this.props}/>
+          <FavoriteTab  tabLabel='最热' flag={FLAG_STORAGE.flag_popular} themeColor={this.state.themeColor}/>
+          <FavoriteTab  tabLabel='趋势' flag={FLAG_STORAGE.flag_trending} themeColor={this.state.themeColor}/>
         </ScrollableTabView>
       </View>
     );
@@ -62,8 +69,12 @@ class FavoriteTab extends Component{
     this.state={
       data:[],
       refresh:true,
-      favoriteKeys:[]
+      favoriteKeys:[],
+      themeColor:props.themeColor
     }
+  }
+  componentWillReceiveProps(newProps){
+    this.onLoad();
   }
   componentDidMount(){
     this.onLoad();
@@ -98,6 +109,7 @@ class FavoriteTab extends Component{
       return <CellComponent
         data= {aa.item}
         aa ={aa.item}
+        themeColor={this.props.themeColor}
         onFavorite={(item,isFavorite)=>{
           this.onLoad();
           var key = this.props.flag === FLAG_STORAGE.flag_popular ? item.id.toString() : item.fullName;

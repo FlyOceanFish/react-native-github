@@ -32,12 +32,13 @@ export default class RepositoryCell extends Component{
   }
   render(){
     let data  = this.props.data.item;
+    let color = this.props.themeColor;
     let favoriteButton = <TouchableOpacity
       onPress={()=>{
         this._onPressFavorite();
       }}
     >
-      <Image style={{width:22,height:22,tintColor:'#2196F3'}}
+      <Image style={{width:22,height:22,tintColor:color}}
              source={this.state.favoriteIcon}/>
     </TouchableOpacity>
     return (

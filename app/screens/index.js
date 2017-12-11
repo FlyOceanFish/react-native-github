@@ -11,7 +11,7 @@ import AboutPage from './about/AboutPage';
 import AboutMe from './about/AboutMe';
 import WebViewPage from './view/WebViewPage';
 import SearchPage from './components/SearchPage';
-
+import CustomTheme from './components/CustomTheme';
 
 // register all screens of the app (including internal ones)
 export function registerScreens() {
@@ -26,5 +26,6 @@ export function registerScreens() {
   Navigation.registerComponent('com.fof.AboutMe', () => AboutMe);
   Navigation.registerComponent('com.fof.WebViewPage', () => WebViewPage);
   Navigation.registerComponent('com.fof.SearchPage', () => SearchPage);
+  Navigation.registerComponent('com.fof.CustomTheme', () => CustomTheme);
 
 }

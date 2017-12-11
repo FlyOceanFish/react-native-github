@@ -96,8 +96,8 @@ export default class CustomeKeyPage extends Component<{}> {
         }}
         leftText={leftText}
         isChecked={this.isRemoveKey?false:item.checked}
-        checkedImage={<Image style={{tintColor:'#6495Ed'}} source={require('../../../img/ic_check_box.png')}/>}
-        unCheckedImage={<Image style={{tintColor:'#6495Ed'}} source={require('../../../img/ic_check_box_outline_blank.png')}/>}
+        checkedImage={<Image style={{tintColor:this.props.themeColor}} source={require('../../../img/ic_check_box.png')}/>}
+        unCheckedImage={<Image style={{tintColor:this.props.themeColor}} source={require('../../../img/ic_check_box_outline_blank.png')}/>}
       />
     )
   }

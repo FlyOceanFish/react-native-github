@@ -72,11 +72,11 @@ export default class AboutPage extends Component<{}> {
     render(){
       let content = <View>
         {this.aboutCommon.renderRepository(this.state.projectModels)}
-        {Utils.getSettingItem(()=>this.onClick(MORE_MENU.WebSite),require('../../../img/ic_computer.png'),MORE_MENU.WebSite,{tintColor:'#2196F3'})}
+        {Utils.getSettingItem(()=>this.onClick(MORE_MENU.WebSite),require('../../../img/ic_computer.png'),MORE_MENU.WebSite,{tintColor:this.props.themeColor})}
         <View style={GlobalStyles.line}/>
-        {Utils.getSettingItem(()=>this.onClick(MORE_MENU.About_Author),require('../../../img/ic_insert_emoticon.png'),MORE_MENU.About_Author,{tintColor:'#2196F3'})}
+        {Utils.getSettingItem(()=>this.onClick(MORE_MENU.About_Author),require('../../../img/ic_insert_emoticon.png'),MORE_MENU.About_Author,{tintColor:this.props.themeColor})}
         <View style={GlobalStyles.line}/>
-        {Utils.getSettingItem(()=>this.onClick(MORE_MENU.Feedback),require('../../../img/ic_feedback.png'),MORE_MENU.Feedback,{tintColor:'#2196F3'})}
+        {Utils.getSettingItem(()=>this.onClick(MORE_MENU.Feedback),require('../../../img/ic_feedback.png'),MORE_MENU.Feedback,{tintColor:this.props.themeColor})}
         <View style={GlobalStyles.line}/>
       </View>
       return this.aboutCommon.renderView(content,{
