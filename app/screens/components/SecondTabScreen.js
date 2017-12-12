@@ -110,7 +110,7 @@ export default class SecondTabScreen extends BaseComponent<{}> {
     >
     {this.state.languages.map((reuslt, i, arr)=> {
         let language = arr[i];
-        return language.checked ? <TrendingTab key={i} tabLabel={language.name} themeColor={this.state.themeColor} searchTime={this.state.searchTime}/> : null;
+        return language.checked ? <TrendingTab key={i} tabLabel={language.name} themeColor={this.state.themeColor} searchTime={this.state.searchTime} {...this.props}/> : null;
     })}
     </ScrollableTabView>:null;
     let timeSpan = <Popover

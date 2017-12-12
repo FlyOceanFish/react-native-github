@@ -96,7 +96,7 @@ export default class FirstTabScreen extends BaseComponent<{}> {
     >
     {this.state.languages.map((reuslt, i, arr)=> {
         let language = arr[i];
-        return language.checked ? <PopularTab key={i} tabLabel={language.name} themeColor={this.state.themeColor}/> : null;
+        return language.checked ? <PopularTab key={i} tabLabel={language.name} themeColor={this.state.themeColor} {...this.props}/> : null;
     })}
     </ScrollableTabView>:null;
     return (

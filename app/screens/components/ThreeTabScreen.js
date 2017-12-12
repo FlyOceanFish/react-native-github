@@ -52,8 +52,8 @@ export default class ThreeTabScreen extends BaseComponent<{}> {
             renderTabBar={() => <ScrollableTabBar style={{height: 40, borderWidth: 0, elevation: 2}}
                                                   tabStyle={{height: 39}}/>}
         >
-          <FavoriteTab  tabLabel='最热' flag={FLAG_STORAGE.flag_popular} themeColor={this.state.themeColor}/>
-          <FavoriteTab  tabLabel='趋势' flag={FLAG_STORAGE.flag_trending} themeColor={this.state.themeColor}/>
+          <FavoriteTab  tabLabel='最热' flag={FLAG_STORAGE.flag_popular} themeColor={this.state.themeColor} {...this.props}/>
+          <FavoriteTab  tabLabel='趋势' flag={FLAG_STORAGE.flag_trending} themeColor={this.state.themeColor} {...this.props}/>
         </ScrollableTabView>
       </View>
     );
