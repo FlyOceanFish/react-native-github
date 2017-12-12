@@ -36,8 +36,6 @@ RCT_EXPORT_METHOD(showMenu:(NSArray *)names rect:rect callback:(RCTResponseSende
     [arrays addObject:item];
   }
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-    float width = CGRectGetWidth(keyWindow.bounds);
     [KxMenu showMenuInView:[UIApplication sharedApplication].keyWindow
                   fromRect:CGRectMake([dic[@"ox"] floatValue], [dic[@"oy"] floatValue]+20, [dic[@"width"] floatValue], [dic[@"height"] floatValue])
                  menuItems:arrays];
