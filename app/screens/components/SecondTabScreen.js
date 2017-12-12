@@ -11,7 +11,8 @@ import {
   Text,
   View,
   FlatList,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  NativeModules
 } from 'react-native';
 
 import HttpUtils from '../../Vendor/HttpUtils'
@@ -21,13 +22,18 @@ import LanguageDao,{FLAG_LANGUAGE} from '../../dao/LanguageDao'
 import FavoriteDao from '../../dao/FavoriteDao'
 import TrendingCell from '../view/TrendingCell'
 import TimeSpan from '../../model/TimeSpan'
-import CustomTopBar from '../view/CustomTopBar'
+import CustomTopBar,{ACTION_CUSTOMTOPBAR} from '../view/CustomTopBar'
 import Popover from '../../Vendor/Popover'
 import ProjectModel from '../../model/ProjectModel'
 import BaseComponent from './BaseComponent'
 
 import {Navigation} from 'react-native-navigation';
 import ScrollableTabView,{ScrollableTabBar} from 'react-native-scrollable-tab-view'
+
+var timeSpanTextArray = [new TimeSpan('今 天', 'since=daily'),
+    new TimeSpan('本 周', 'since=weekly'), new TimeSpan('本 月', 'since=monthly')]
+
+var dropDownMenu = NativeModules.DropDownMenu;
 
 Navigation.registerComponent('com.fof.CustomTopBar', () => CustomTopBar);
 
@@ -48,14 +54,15 @@ export default class SecondTabScreen extends BaseComponent<{}> {
       languages:[],
       isVisible: false,
       buttonRect: {},
-      themeColor:this.props.themeColor
+      themeColor:this.props.themeColor,
+      searchTime:timeSpanTextArray[0].searchText
     }
   }
   componentDidMount(){
       this.props.navigator.setStyle({
       navBarCustomView: 'com.fof.CustomTopBar',
       navBarComponentAlignment: 'center',
-      navBarCustomViewInitialProps: {title: 'Hi Custom',aa:(button)=>{
+      navBarCustomViewInitialProps: {title: '今天',aa:(button)=>{
         this.showPopover(button);
       }}
     });
@@ -75,16 +82,20 @@ export default class SecondTabScreen extends BaseComponent<{}> {
     })
   }
     showPopover(ref) {
+      let titles = [];
+      timeSpanTextArray.map((result,i,arr)=>{
+        titles.push(result.showText);
+      })
       ref.measure((ox, oy, width, height, px, py) => {
-        this.setState({
-          isVisible: true,
-          buttonRect: {x: px, y: py, width: width, height: height}
+        dropDownMenu.showMenu(titles,{ox,oy,width,height},(index)=>{
+          this.setState({
+            searchTime:timeSpanTextArray[index].searchText
+          })
+          DeviceEventEmitter.emit(ACTION_CUSTOMTOPBAR.CHANGE_TITLE,timeSpanTextArray[index].showText);
         });
       });
-  }
 
-  closePopover= ()=> {
-    this.setState({isVisible: false});
+
   }
 
   render() {
@@ -99,7 +110,7 @@ export default class SecondTabScreen extends BaseComponent<{}> {
     >
     {this.state.languages.map((reuslt, i, arr)=> {
         let language = arr[i];
-        return language.checked ? <TrendingTab key={i} tabLabel={language.name} themeColor={this.state.themeColor}/> : null;
+        return language.checked ? <TrendingTab key={i} tabLabel={language.name} themeColor={this.state.themeColor} searchTime={this.state.searchTime}/> : null;
     })}
     </ScrollableTabView>:null;
     let timeSpan = <Popover
@@ -128,7 +139,7 @@ class TrendingTab extends Component{
     }
   }
   componentDidMount(){
-    this.onLoad();
+    this.onLoad(this.props.searchTime);
     this.listner = DeviceEventEmitter.addListener('favoriteChanged_trending',()=>{
       this.getFavoriteKeys();
     })
@@ -142,7 +153,9 @@ class TrendingTab extends Component{
     if (newProps.themeColor!==this.state.themeColor) {
       this.setState({themeColor:newProps.themeColor});
       this.flushFavoriteState();
-    }
+    }else if (this.props.searchTime!==newProps.searchTime) {
+          this.onLoad(newProps.searchTime);
+      }
   }
   getFavoriteKeys(){
     favoriteDao.getFavoriteKeys()
@@ -168,8 +181,9 @@ class TrendingTab extends Component{
       refresh:false
     });
   }
-  onLoad(){
-    let url = this.genURL('?since=daily',this.props.tabLabel);
+  onLoad(searchTime){
+    let url = this.genURL(searchTime,this.props.tabLabel);
+    console.log('请求新数据'+url);
     dataRepository.fetchRepository(url)
         .then(result=>{
           this.items = result&&result.items?result.items:result?result:[];
@@ -191,7 +205,7 @@ class TrendingTab extends Component{
         });
   }
   genURL(timeSpan,category){
-    return API_URL+category+'?'+timeSpan.searchText;
+    return API_URL+category+'?'+timeSpan;
   }
 
   _renderItem = (bb) => (
@@ -228,7 +242,7 @@ class TrendingTab extends Component{
       this.setState({
           refresh:true
       });
-      this.onLoad();
+      this.onLoad(this.props.searchTime);
   }
   render(){
     return(

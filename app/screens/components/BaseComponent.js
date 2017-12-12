@@ -6,13 +6,16 @@ import {
 export default class BaseComponent extends Component<{}> {
     constructor(props) {
       super(props);
-      this.baseListner = DeviceEventEmitter.addListener('ACTION_BASE',(params)=>{
+      this.baseListner = DeviceEventEmitter.addListener('ACTION_BASE',(themeColor)=>{
         console.log('收到改变主题通知');
         this.setState({
-          themeColor:params
+          themeColor:themeColor
         })
         this.props.navigator.setStyle({
-          navBarBackgroundColor: params
+          navBarBackgroundColor: themeColor,
+        });
+        this.props.navigator.setTabButton({
+          tabBarSelectedLabelColor:themeColor
         });
       })
     }

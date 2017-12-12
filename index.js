@@ -63,7 +63,7 @@ setTimeout(()=>{
         navBarTextColor: '#ffffff',
         tabBarSelectedButtonColor: '#ff505c',
         navigationBarColor: '#2196F3',
-        navBarBackgroundColor: '#2196F3',
+        navBarBackgroundColor: 'white',
         statusBarColor: '#002b4c',
         tabFontFamily: 'BioRhyme-Bold',
     },
