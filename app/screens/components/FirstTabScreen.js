@@ -58,6 +58,7 @@ export default class FirstTabScreen extends BaseComponent<{}> {
   if (event.type == 'NavBarButtonPress') {
     if (event.id == 'search') {
       this.props.navigator.push({
+        backButtonTitle:'',
         screen:'com.fof.SearchPage',
         navigatorStyle:{
           tabBarHidden: true

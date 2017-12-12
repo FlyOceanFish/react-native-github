@@ -50,15 +50,7 @@ export default class SearchPage extends Component<{}> {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     let icon = props.isFavorite?require('../../../img/ic_star.png'):require('../../../img/ic_unstar_transparent.png');
     this.setNavigatorRightButton(this.rightButtonText);
-  }
-  componentWillUnmount(){
-    if (this.isChanged) {
-      DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_RESTART);
-    }
-    this.cancelable&&this.cancelable.cancel();
-  }
-  componentDidMount(){
-      this.props.navigator.setStyle({
+    this.props.navigator.setStyle({
       navBarCustomView: 'com.fof.CustomSearchView',
       navBarComponentAlignment: 'center',
       navBarCustomViewInitialProps: {title: 'Hi Custom',textChange:(text,textInput)=>{
@@ -68,6 +60,15 @@ export default class SearchPage extends Component<{}> {
         this.onLoad();
       }}
     });
+  }
+  componentWillUnmount(){
+    if (this.isChanged) {
+      DeviceEventEmitter.emit('ACTION_HOME',ACTION_HOME.A_RESTART);
+    }
+    this.cancelable&&this.cancelable.cancel();
+  }
+  componentDidMount(){
+
     this.initKeys();
   }
   saveKey(){
