@@ -5,9 +5,8 @@ React Native现在所谓如火如荼，所以作者也不例外，赶紧来凑�
 
 ## 效果
 
-[效果图](./效果图.gif)
+![效果图](./效果图.gif)
 
-[效果图](https://github.com/FlyOceanFish/react-native-github/blob/master/%E6%95%88%E6%9E%9C%E5%9B%BE.gif)
 ## 差异
 
 1. 首先原来的GitHub Popular这个APP有些技术比较老了，比如`Listview`已经被废弃。作者采用了`FlatList`这个官方推荐的控件，相比`Listview`，`FlatList`性能比较高，具体想了解的可以去官网查看
@@ -112,5 +111,3 @@ componentWillUnmount(){
 ## 感悟
 
 第一个项目写的时候比较生疏，写第二个的时候就有点孰能生巧的感觉，所以写的会比较快。看视频的时候最好别按部就班的去写，最好一边看然后暂停一下，自己去实现一下或者尝试不同的实现方式去写。有时候看视频其实也会忽略一些细节，导致项目报错，这时候不要慌，我们要充分利用debug模式配合Chrome来断点远程调试，一点一点的运行最终肯定会找到问题所在。
-
-[此项目源码传送门](https://github.com/FlyOceanFish/react-native-github)
